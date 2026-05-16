@@ -5,6 +5,7 @@ from app.schemas.employee import EmployeeResponse
 
 
 class DepartmentCreate(BaseModel):
+    """Входной билет для создания"""
     name: str = Field(..., min_length=1, max_length=200)
     parent_id: int | None = None
 
@@ -18,6 +19,7 @@ class DepartmentCreate(BaseModel):
         return v
 
 class DepartmentUpdate(BaseModel):
+    """Входной билет для редактирования"""
     name: str | None = Field(None, min_length=1, max_length=200)
     parent_id: int | None = None
 
@@ -31,6 +33,7 @@ class DepartmentUpdate(BaseModel):
         return v
 
 class DepartmentResponse(BaseModel):
+    """Обычный ответ сервера"""
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -39,6 +42,7 @@ class DepartmentResponse(BaseModel):
     created_at: datetime
 
 class DepartmentDetail(DepartmentResponse):
+    """Полное дерево отдела"""
     model_config = ConfigDict(from_attributes=True)
 
     employees: list[EmployeeResponse] = []

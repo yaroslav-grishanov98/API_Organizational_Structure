@@ -1,3 +1,4 @@
+from __future__ import annotations
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from app.schemas.employee import EmployeeResponse
@@ -9,13 +10,12 @@ class DepartmentCreate(BaseModel):
 
     @field_validator("name", mode="before")
     @classmethod
-    def strip_name(cls, v:str) -> str:
+    def strip_name(cls, v: str) -> str:
         if isinstance(v, str):
             v = v.strip()
         if not v:
-            raise ValueError("name cannot be empty or whitespace")
+            raise ValueError("name не может быть пустым")
         return v
-
 
 class DepartmentUpdate(BaseModel):
     name: str | None = Field(None, min_length=1, max_length=200)
@@ -27,9 +27,8 @@ class DepartmentUpdate(BaseModel):
         if isinstance(v, str):
             v = v.strip()
         if not v:
-            raise ValueError("name cannot be empty or whitespace")
+            raise ValueError("name не может быть пустым")
         return v
-
 
 class DepartmentResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -39,9 +38,10 @@ class DepartmentResponse(BaseModel):
     parent_id: int | None
     created_at: datetime
 
+class DepartmentDetail(DepartmentResponse):
+    model_config = ConfigDict(from_attributes=True)
 
-class DepartmentDetail(BaseModel):
-    employees: [list[EmployeeResponse], Field(default_factory=list)]
-    children: [list["DepartmentDetail"], Field(default_factory=list)]
+    employees: list[EmployeeResponse] = []
+    children: list[DepartmentDetail] = []
 
 DepartmentDetail.model_rebuild()

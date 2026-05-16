@@ -6,11 +6,12 @@ from app.models.department import Department
 
 
 class Employee(Base):
+    """Описание таблицы сотрудников"""
     __tablename__ = "employees"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     department_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey("departments_id", ondelete="CASCADE"), nullable=False
+        Integer, ForeignKey("departments.id", ondelete="CASCADE"), nullable=False
     )
     full_name: Mapped[str] = mapped_column(String(200), nullable=False)
     position: Mapped[str] = mapped_column(String(200), nullable=False)

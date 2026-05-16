@@ -5,6 +5,7 @@ from app.database import Base
 
 
 class Department(Base):
+    """Описание таблицы отделов"""
     __tablename__ = "departments"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
@@ -21,15 +22,15 @@ class Department(Base):
         back_populates="children",
         remote_side="Department.id",
     )
-    children = Mapped[list["Department"]] = relationship(
+    children: Mapped[list["Department"]] = relationship(
         "Department",
         back_populates="parent",
-        cascade="all, delete_orphan",
+        cascade="all, delete-orphan",
         passive_deletes=True,
     )
     employees: Mapped[list["Employee"]] = relationship(
         "Employee",
         back_populates="department",
-        cascade="all, delete_orphan",
+        cascade="all, delete-orphan",
         passive_deletes=True,
     )

@@ -3,13 +3,16 @@ from app.models.employee import Employee
 
 
 class EmployeeRepository:
+    """Репозиторий сотрудников"""
     def __init__(self, db: Session):
         self.db = db
 
     def get_by_id(self, employee_id: int) -> Employee | None:
+        """Получить сотрудника по айди"""
         return self.db.query(Employee).filter(Employee.id == employee_id).first()
 
     def get_by_department_id(self, department_id: int) -> list[Employee]:
+        """Найти сотрудника по айди отдела"""
         return (
             self.db.query(Employee)
             .filter(Employee.department_id == department_id)
@@ -24,6 +27,7 @@ class EmployeeRepository:
         position: str,
         hired_at=None,
     ) -> Employee:
+        """Создать сотрудника"""
         employee = Employee(
             department_id=department_id,
             full_name=full_name,

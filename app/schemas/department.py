@@ -1,23 +1,25 @@
+from __future__ import annotations
 from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from app.schemas.employee import EmployeeResponse
 
 
 class DepartmentCreate(BaseModel):
+    """Входной билет для создания"""
     name: str = Field(..., min_length=1, max_length=200)
     parent_id: int | None = None
 
     @field_validator("name", mode="before")
     @classmethod
-    def strip_name(cls, v:str) -> str:
+    def strip_name(cls, v: str) -> str:
         if isinstance(v, str):
             v = v.strip()
         if not v:
-            raise ValueError("name cannot be empty or whitespace")
+            raise ValueError("name не может быть пустым")
         return v
 
-
 class DepartmentUpdate(BaseModel):
+    """Входной билет для редактирования"""
     name: str | None = Field(None, min_length=1, max_length=200)
     parent_id: int | None = None
 
@@ -27,11 +29,11 @@ class DepartmentUpdate(BaseModel):
         if isinstance(v, str):
             v = v.strip()
         if not v:
-            raise ValueError("name cannot be empty or whitespace")
+            raise ValueError("name не может быть пустым")
         return v
 
-
 class DepartmentResponse(BaseModel):
+    """Обычный ответ сервера"""
     model_config = ConfigDict(from_attributes=True)
 
     id: int
@@ -39,9 +41,11 @@ class DepartmentResponse(BaseModel):
     parent_id: int | None
     created_at: datetime
 
+class DepartmentDetail(DepartmentResponse):
+    """Полное дерево отдела"""
+    model_config = ConfigDict(from_attributes=True)
 
-class DepartmentDetail(BaseModel):
-    employees: [list[EmployeeResponse], Field(default_factory=list)]
-    children: [list["DepartmentDetail"], Field(default_factory=list)]
+    employees: list[EmployeeResponse] = []
+    children: list[DepartmentDetail] = []
 
 DepartmentDetail.model_rebuild()

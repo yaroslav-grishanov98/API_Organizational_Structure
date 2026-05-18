@@ -17,6 +17,7 @@ def create_department(
         body: DepartmentCreate,
         db: Session = Depends(get_db),
 ):
+    """Создать отдел"""
     service = DepartmentService(db)
     return service.create(name=body.name, parent_id=body.parent_id)
 
@@ -26,6 +27,7 @@ def create_employee(
         body: EmployeeCreate,
         db: Session = Depends(get_db)
 ):
+    """Создать сотрудника"""
     service = EmployeeService(db)
     return service.create(
         department_id=department_id,
@@ -41,6 +43,7 @@ def get_department(
         include_employees: bool = Query(default=True),
         db: Session = Depends(get_db),
 ):
+    """Получить отдел"""
     service = DepartmentService(db)
     return service.get_detail(
         department_id=department_id,
@@ -54,6 +57,7 @@ def update_department(
         body: DepartmentUpdate,
         db: Session = Depends(get_db),
 ):
+    """Обновить отдел"""
     service = DepartmentService(db)
     update_data = body.model_dump(exclude_unset=True)
     return service.update(department_id, **update_data)
@@ -65,6 +69,7 @@ def delete_department(
         reassign_to_department_id: int | None = Query(default=None),
         db: Session = Depends(get_db),
 ):
+    """Удалить отдел"""
     service = DepartmentService(db)
     service.delete(
         department_id=department_id,

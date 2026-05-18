@@ -1,12 +1,11 @@
 import logging
-
 from sqlalchemy.orm import Session
-
 from app.exceptions import bad_request, conflict, not_found
 from app.models.department import Department
 from app.repositories.department import DepartmentRepository
 from app.repositories.employee import EmployeeRepository
 from app.schemas.department import DepartmentDetail, DepartmentResponse
+
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +39,7 @@ class DepartmentService:
 
         return self._build_tree(department, depth, include_employees)
 
-    def build_tree(
+    def _build_tree(
             self, department: Department, depth: int, include_employees: bool
     ) -> DepartmentDetail:
         employees = []
@@ -77,11 +76,10 @@ class DepartmentService:
         if "parent_id" in kwargs and kwargs["parent_id"] is not None:
             descendant_ids = self.dept_repo.get_all_descendant_ids(department_id)
             if kwargs["parent_id"] in descendant_ids:
-                raise conflict("Невозможно перенести отдел")
-
-        new_parent = self.dept_repo.get_by_id(kwargs["parent_id"])
-        if not new_parent:
-            raise not_found("Отдел не найден")
+                raise conflict("Невозможно перенести отдел внутрь своего поддерева")
+            new_parent = self.dept_repo.get_by_id(kwargs["parent_id"])
+            if not new_parent:
+                raise not_found("Отдел не найден")
 
         check_name = new_name if new_name else department.name # Уникальность имени
         check_parent = new_parent_id

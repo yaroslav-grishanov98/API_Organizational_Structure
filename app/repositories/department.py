@@ -4,23 +4,34 @@ from app.models.department import Department
 
 
 class DepartmentRepository:
+    """Репозиторий отделов"""
     def __init__(self, db: Session):
         self.db = db
 
     def get_by_id(self, department_id: int) -> Department | None:
+        """Получение отдела по айди"""
         return self.db.query(Department).filter(Department.id == department_id).first()
 
     def get_by_name_and_parent(
             self, name: str, parent_id: int | None, exclude_id: int | None = None
     ) -> Department | None:
-        query = self.db.query(Department).filter(
-            and_(Department.name == name, Department.parent_id == parent_id)
-        )
+        """Получение отдела по названию и родителю"""
+        if parent_id is None:
+            query = self.db.query(Department).filter(
+                Department.name == name,
+                Department.parent_id.is_(None)
+            )
+        else:
+            query = self.db.query(Department).filter(
+                Department.name == name,
+                Department.parent_id == parent_id
+            )
         if exclude_id is not None:
-            query = query.filter(Department.id !=exclude_id)
-            return query.first()
+            query = query.filter(Department.id != exclude_id)
+        return query.first()
 
     def create(self, name: str, parent_id: int | None) -> Department:
+        """Создать отдел"""
         department = Department(name=name, parent_id=parent_id)
         self.db.add(department)
         self.db.commit()
@@ -28,6 +39,7 @@ class DepartmentRepository:
         return department
 
     def update(self, department: Department, **kwargs) -> Department:
+        """Обновить отдел"""
         for key, value in kwargs.items():
             setattr(department, key, value)
         self.db.commit()
@@ -35,6 +47,7 @@ class DepartmentRepository:
         return department
 
     def delete(self, department: Department) -> None:
+        """Удалить отдел"""
         self.db.delete(department)
         self.db.commit()
 

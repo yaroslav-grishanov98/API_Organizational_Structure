@@ -21,9 +21,10 @@ services:
     build: .
     container_name: org_app
     ports:
-      - "8000:8000"
+        - "8000:8000"
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/org_db
+      PYTHONPATH: /app
     depends_on:
       db:
         condition: service_healthy
